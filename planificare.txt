@@ -1,0 +1,282 @@
+CHEATSHEET - T8 Testarea unei retele Blockchain
+Proiect: Subscription + Treasury + MockOracle
+
+1. Ce trebuie sa spunem din prima
+- Tema noastra este T8: testarea unei retele blockchain.
+- Proiectul foloseste Hardhat + Mocha + Chai + TypeScript pentru a testa contracte Solidity.
+- Testele ruleaza pe o retea blockchain locala simulata de Hardhat.
+- Avem 3 suite de teste:
+  - test/Subscription.ts
+  - test/TreasuryAndOracle.ts
+  - test/Performance.ts
+- In total: 16 teste care trec.
+
+2. Cum rulam testele
+- Din folderul proiectului:
+  cd C:\Users\PC\Desktop\Test_Sys\Proiect---Testarea-Sistemelor-Software
+  npm test
+- Scriptul este definit in package.json la liniile 17-22.
+- Comanda de test este la package.json:21
+- Daca rulam din folderul parinte, Hardhat nu gaseste config-ul si apare eroarea HHE3.
+- Config-ul Hardhat este in hardhat.config.ts:14-16
+
+3. Ce tipuri de teste avem
+- Teste unitare:
+  verifica functii individuale si reguli locale din contracte.
+- Teste de integrare:
+  verifica interactiunea dintre Subscription, Treasury si MockOracle.
+- Teste de securitate:
+  verifica roluri, acces, input invalid si blocarea operatiilor in stari sensibile.
+- Teste de performanta:
+  masoara consumul de gas pentru operatiile principale.
+
+4. Daca profesoara intreaba "de ce acestea sunt teste blockchain?"
+- Pentru ca testam smart contracts care ruleaza pe EVM.
+- Verificam starea on-chain, evenimentele, revert-urile, balantele si comportamentul dependent de timp.
+- Folosim conturi diferite din reteaua locala Hardhat ca sa simulam owner, admin, user, alt user.
+
+5. Unde sunt functiile importante din cod
+- Contractul Subscription:
+  - constructor: contracts/contracts/Subscriptions.sol:51
+  - deposit: contracts/contracts/Subscriptions.sol:61
+  - subscribe: contracts/contracts/Subscriptions.sol:70
+  - subscribeFromWallet: contracts/contracts/Subscriptions.sol:102
+  - subscribeFromBalance: contracts/contracts/Subscriptions.sol:124
+  - withdraw: contracts/contracts/Subscriptions.sol:143
+  - cancelSubscription: contracts/contracts/Subscriptions.sol:156
+  - processRenewal: contracts/contracts/Subscriptions.sol:165
+  - setAutoRenew: contracts/contracts/Subscriptions.sol:184
+  - isActive: contracts/contracts/Subscriptions.sol:191
+  - quote: contracts/contracts/Subscriptions.sol:195
+  - periodsCost: contracts/contracts/Subscriptions.sol:199
+  - setPrice: contracts/contracts/Subscriptions.sol:206
+  - setPeriod: contracts/contracts/Subscriptions.sol:211
+  - setTreasury: contracts/contracts/Subscriptions.sol:216
+  - setPaused: contracts/contracts/Subscriptions.sol:222
+  - ownerWithdraw: contracts/contracts/Subscriptions.sol:228
+  - receive: contracts/contracts/Subscriptions.sol:235
+  - _sendRevenueToTreasury: contracts/contracts/Subscriptions.sol:241
+
+- Contractul Treasury:
+  - constructor: contracts/contracts/Treasury.sol:28
+  - setSubscription: contracts/contracts/Treasury.sol:33
+  - depositRevenue: contracts/contracts/Treasury.sol:39
+  - adminDeposit: contracts/contracts/Treasury.sol:44
+  - adminBalance: contracts/contracts/Treasury.sol:49
+  - withdraw: contracts/contracts/Treasury.sol:53
+
+- Contractul MockOracle:
+  - constructor: contracts/contracts/MockOracle.sol:14
+  - latestAnswer: contracts/contracts/MockOracle.sol:21
+  - setPrice: contracts/contracts/MockOracle.sol:25
+
+6. **Ce teste avem in Subscription.ts**
+- Fixture de deploy:
+  test/Subscription.ts:6
+  Folosim loadFixture ca fiecare test sa porneasca dintr-o stare curata.
+
+- Test configurare deploy:
+  test/Subscription.ts:37
+  Verifica owner, pret, perioada si treasury.
+
+- Test deposit:
+  test/Subscription.ts:48
+  Verifica deposit valid si revert pe suma zero.
+
+- Test subscribe cu balance + wallet:
+  test/Subscription.ts:61
+  Verifica combinarea fondurilor, activarea auto-renew si trimiterea banilor la treasury.
+
+- Test subscribeFromWallet cu leftover:
+  test/Subscription.ts:83
+  Verifica faptul ca restul ramas din plata merge in soldul intern.
+
+- Test subscribeFromBalance:
+  test/Subscription.ts:101
+  Verifica extinderea unui abonament deja activ din soldul intern.
+
+- Test processRenewal:
+  test/Subscription.ts:116
+  Verifica faptul ca renew se face doar dupa expirare si doar daca exista fonduri.
+
+- Test cancel + paused:
+  test/Subscription.ts:139
+  Verifica anularea abonamentului si blocarea operatiilor sensibile cand contractul este pus pe paused.
+
+- Test restrictii admin:
+  test/Subscription.ts:158
+  Verifica faptul ca doar owner-ul poate schimba setarile administrative.
+
+7. **Ce teste avem in TreasuryAndOracle.ts**
+- Fixture de deploy:
+  test/TreasuryAndOracle.ts:6
+
+- Test ca doar Subscription poate depune revenue:
+  test/TreasuryAndOracle.ts:29
+
+- Test adminDeposit + withdraw in Treasury:
+  test/TreasuryAndOracle.ts:40
+
+- Test restrictii admin pentru Treasury:
+  test/TreasuryAndOracle.ts:52
+
+- Test restrictii si valori invalide pentru Oracle:
+  test/TreasuryAndOracle.ts:65
+
+8. **Ce teste de performanta avem**
+- Fisier:
+  test/Performance.ts
+
+- Fixture de deploy:
+  test/Performance.ts:6
+
+- Helper pentru masurare gas:
+  test/Performance.ts:48
+  gasUsedOf asteapta tranzactia, ia receipt-ul si extrage gasUsed.
+
+- Test principal cu plafoane de gas:
+  test/Performance.ts:54
+  Operatii masurate:
+  - deposit
+  - subscribeFromWallet
+  - subscribeFromBalance
+  - processRenewal
+  - withdraw
+
+- Test comparativ exact payment vs leftover:
+  test/Performance.ts:96
+  Arata ca o plata care lasa rest in sold consuma mai mult gas decat o plata exacta.
+
+- Test comparativ renew vs prima abonare:
+  test/Performance.ts:112
+  Arata ca renew este mai ieftin decat o abonare initiala din wallet.
+
+- Test performanta Treasury:
+  test/Performance.ts:129
+  Masoara adminDeposit si withdraw.
+
+9. Valorile actuale de gas
+- deposit: 47360
+- subscribeFromWallet: 98429
+- subscribeFromBalance: 61429
+- processRenewal: 28875
+- withdraw: 38075
+- treasury.adminDeposit: 22858
+- treasury.withdraw: 33571
+
+10. Daca profesoara intreaba "de ce e important gas-ul?"
+- In blockchain, costul executiei este foarte important.
+- O functie poate fi corecta logic, dar daca are cost mare de gas devine ineficienta sau scumpa.
+- De aceea, la performanta ne uitam la gasUsed, nu doar la timp de executie.
+
+11. **Ce inseamna loadFixture?**
+- loadFixture salveaza o stare initiala dupa deploy si o refoloseste rapid.
+- Avantaj:
+  - testele sunt izolate
+  - fiecare test incepe din aceeasi stare
+  - testele ruleaza mai repede decat daca facem deploy complet de fiecare data
+- Exemple:
+  - test/Subscription.ts:38
+  - test/TreasuryAndOracle.ts:30
+  - test/Performance.ts:55
+
+12. **Cum verificati erorile?**
+- Cu revertedWithCustomError.
+- Exemple:
+  - AmountZero: test/Subscription.ts:51
+  - NotOwner: test/Subscription.ts:161
+  - NotSubscription: test/TreasuryAndOracle.ts:32
+  - NotAdmin Treasury: test/TreasuryAndOracle.ts:55
+  - InvalidPrice Oracle: test/TreasuryAndOracle.ts:72
+
+13. **Cum verificati evenimentele?**
+- Cu to.emit(...).withArgs(...)
+- Exemple:
+  - Deposited: test/Subscription.ts:54
+  - Subscribed: test/Subscription.ts:71
+  - AutoRenewProcessed: test/Subscription.ts:130
+  - RevenueDeposited: test/TreasuryAndOracle.ts:35
+  - PriceUpdated: test/TreasuryAndOracle.ts:75
+
+14. **Cum simulati trecerea timpului?**
+- Cu time.increase(...)
+- Exemple:
+  - test/Subscription.ts:109
+  - test/Subscription.ts:124
+  - test/Performance.ts:71
+  - test/Performance.ts:120
+
+15. **Cum demonstrati integrarea?**
+- Cel mai clar exemplu este subscribe + treasury.
+- In Subscription, banii sunt trimisi mai departe prin _sendRevenueToTreasury:
+  contracts/contracts/Subscriptions.sol:241
+- In Treasury, doar Subscription are voie sa depuna revenue:
+  contracts/contracts/Treasury.sol:39
+- Testul de integrare principal:
+  test/Subscription.ts:61
+
+16. **Ce aspecte de securitate ati testat?**
+- Control acces:
+  - onlyOwner in Subscription: contracts/contracts/Subscriptions.sol:41
+  - onlyAdmin in Treasury: contracts/contracts/Treasury.sol:18
+  - onlySubscription in Treasury: contracts/contracts/Treasury.sol:23
+- Input invalid:
+  - AmountZero, ZeroAddress, InvalidPrice
+- Stare blocata:
+  - notPaused in Subscription: contracts/contracts/Subscriptions.sol:46
+  - test paused: test/Subscription.ts:139
+
+17. **Ce NU ati testat inca, dar am putea adauga?**
+- ownerWithdraw in Subscription nu are inca test dedicat.
+- receive() din Subscription nu are inca test dedicat.
+- constructori cu address(0) nu au inca teste dedicate.
+- mai multe teste de securitate avansata:
+  - fuzzing
+  - reentrancy-specific tests
+  - scenarii cu mai multi useri in paralel
+- eventual gas reporter dedicat sau coverage report
+
+18. De ce nu Java?
+- Pentru T8 nu ni se cere Java.
+- Cerinta este despre testarea unei retele blockchain.
+- Tehnologia potrivita pentru smart contracts Solidity este Hardhat + Mocha/Chai.
+- Java era relevanta pentru alta tema, nu pentru Tema 8.
+
+19. **De ce avem si teste unitare si de integrare?**
+- Testele unitare verifica functia in sine.
+- Testele de integrare verifica daca sistemul complet functioneaza corect cand contractele comunica intre ele.
+- In blockchain, integrarea este importanta pentru ca banii si starea trec dintr-un contract in altul.
+
+20. Raspuns scurt de 30 secunde
+"Pentru T8 am implementat teste automate cu Hardhat pe o retea blockchain locala. Avem teste unitare pentru functiile principale din Subscription, Treasury si MockOracle, teste de integrare pentru fluxurile dintre contracte, teste de securitate pentru roluri si input invalid, si teste de performanta bazate pe gasUsed. Toata suita ruleaza cu npm test si in momentul de fata avem 16 teste care trec."
+
+21. Daca se blocheaza rularea la prezentare
+- Verificati sa fiti in folderul:
+  C:\Users\PC\Desktop\Test_Sys\Proiect---Testarea-Sistemelor-Software
+- Apoi rulati:
+  npm test
+- Daca sunt intrebari despre unde este comanda:
+  package.json:21
+
+22. Ce sa aratam rapid in cod daca ne cere demo
+- Pentru teste unitare:
+  test/Subscription.ts:48
+- Pentru integrare:
+  test/Subscription.ts:61
+- Pentru securitate:
+  test/Subscription.ts:139
+  test/TreasuryAndOracle.ts:52
+- Pentru performanta:
+  test/Performance.ts:54
+- Pentru logica din contract:
+  contracts/contracts/Subscriptions.sol:70
+  contracts/contracts/Subscriptions.sol:165
+  contracts/contracts/Treasury.sol:39
+
+23. Ideea finala
+- Nu spunem doar "merge".
+- Spunem:
+  - am validat functionalitatea
+  - am validat integrarea dintre contracte
+  - am validat restrictiile de securitate de baza
+  - am masurat costul executiei prin gas
