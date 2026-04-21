@@ -85,9 +85,30 @@ MetaMask (Extensie de browser- pref Chrome)
 
 ## Setup:
 ```bash
-git close <https://github.com/AlexandruRistea/Blockchain_.git>
+git close <https://github.com/Alexandru-Stoinoiu/Proiect---Testarea-Sistemelor-Software.git>
 cd BLOCKCHAIN
 npm install
+```
+
+## Rulare teste pe alt laptop
+
+Dupa ce clonezi proiectul pe un alt laptop, ruleaza din folderul principal:
+
+```bash
+git clone <repo-url>
+cd Proiect---Testarea-Sistemelor-Software
+npm install
+npm test
+```
+
+Comanda `npm test` ruleaza toate testele Hardhat din folderul `test/`.
+
+Daca ai deja proiectul clonat si vrei doar sa rulezi testele:
+
+```bash
+cd Proiect---Testarea-Sistemelor-Software
+npm install
+npm test
 ```
 
 ## Rulare Locala
