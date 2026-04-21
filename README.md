@@ -128,3 +128,33 @@ Faci cont (bla bla)
   - cost ETH = gasUsed * gasPrice
   - DECI arata cat de "greu" este fiecare apel pe EVM(Ethereum Virtual Machine)
 - ORACLE in contract. deploy.ts(line 6) si bootstrap.ts(line 8 & 16) app.jsx(line 12)
+
+## Prezentare Testare
+
+Pentru cerinta **T8 - Testarea unei retele Blockchain**, proiectul include teste automate realizate cu **Hardhat, Mocha, Chai si TypeScript**. Aceste teste ruleaza pe o retea blockchain locala simulata si verifica atat comportamentul individual al contractelor, cat si interactiunea dintre ele.
+
+In proiect sunt acoperite urmatoarele categorii:
+- **Teste unitare** pentru functiile esentiale din contractele `Subscription`, `Treasury` si `MockOracle`
+- **Teste de integrare** pentru fluxurile complete dintre contracte, de exemplu depunere, abonare, trimiterea fondurilor catre treasury si reinnoirea automata
+- **Teste de securitate** pentru controlul accesului, validarea inputului si blocarea operatiilor nepermise
+- **Teste de performanta** prin masurarea consumului de gas pentru operatiile principale din sistem
+
+Prin **testele unitare** se verifica daca fiecare functie isi respecta responsabilitatea: de exemplu depunerea fondurilor, calculul perioadei de abonare, actualizarea starii de auto-renew, modificarea pretului sau actualizarea valorii din oracle. Ideea principala este ca fiecare componenta sa fie verificata separat, pe cazuri valide si invalide.
+
+Prin **testele de integrare** se verifica felul in care contractele colaboreaza intre ele. In proiect, `Subscription` nu functioneaza izolat, ci interactioneaza cu `Treasury`, iar unele informatii sunt influentate de `MockOracle`. De aceea, este important sa demonstram nu doar ca metodele merg individual, ci si ca fluxul complet functioneaza corect atunci cand contractele comunica intre ele.
+
+**Testele de securitate** sunt importante in orice aplicatie blockchain deoarece contractele gestioneaza bani si reguli de acces care, odata deployate, trebuie sa fie foarte clare. In proiect am verificat in special restrictiile pe roluri, prevenirea apelurilor neautorizate, validarea valorilor invalide si blocarea operatiilor atunci cand contractul este pus pe `paused`. Aceste teste raspund la intrebari de tipul: "cine are voie sa cheme functia?", "ce se intampla daca utilizatorul trimite o valoare gresita?" sau "sistemul poate fi folosit intr-o stare in care ar trebui sa fie blocat?".
+
+**Testele de performanta** urmaresc costul executiei pe EVM pentru operatii precum `deposit`, `subscribeFromWallet`, `subscribeFromBalance`, `processRenewal`, `withdraw`, `adminDeposit` si `treasury.withdraw`. In blockchain, performanta nu inseamna doar timp de executie, ci mai ales cost de executie exprimat prin `gas`. De aceea, aceste teste sunt utile pentru a arata ca functiile importante nu sunt doar corecte, ci si rezonabile din punct de vedere al costului.
+
+Pe langa simpla masurare a consumului de gas, testele compara si scenarii diferite. De exemplu, se poate observa ca o reinnoire automata a abonamentului este mai ieftina decat o prima abonare platita direct din wallet, iar o abonare care lasa rest in sold poate consuma mai mult gas decat o plata exacta. Aceste comparatii sunt utile la prezentare deoarece arata ca nu am masurat valori "de forma", ci am analizat comportamentul sistemului in situatii relevante.
+
+Toata suita se ruleaza din directorul proiectului cu:
+
+```bash
+npm test
+```
+
+La momentul actual, rularea automata a testelor returneaza cu succes toate suitele definite, inclusiv testele de performanta. Rezultatul obtinut confirma ca logica principala a contractelor functioneaza corect, ca interactiunea dintre componente este valida, ca exista controale de securitate de baza si ca operatiile importante raman in limite rezonabile de cost pe reteaua blockchain locala.
+
+Pe scurt, partea de testare din proiect nu demonstreaza doar ca "aplicatia merge", ci ca poate fi verificata sistematic din mai multe perspective: corectitudine functionala, colaborare intre contracte, securitate si eficienta executiei. Acesta este motivul pentru care testarea este esentiala intr-un proiect blockchain, unde orice eroare logica sau de acces poate avea efect direct asupra fondurilor si asupra comportamentului intregului sistem.
