@@ -6,7 +6,7 @@
   - test/Subscription.ts
   - test/TreasuryAndOracle.ts
   - test/Performance.ts
-- In total: 16 teste care trec.
+- In total: 16 teste care trec
 
 2. Cum rulam testele
 - Din folderul proiectului:
@@ -25,7 +25,7 @@
 - Teste de securitate:
   verifica roluri, acces, input invalid si blocarea operatiilor in stari sensibile.
 - Teste de performanta:
-  masoara consumul de gas pentru operatiile principale.
+  masoara consumul de gas pentru operatiile principale
 
 4. Daca profesoara intreaba "de ce acestea sunt teste blockchain?"
 - Pentru ca testam smart contracts care ruleaza pe EVM.
