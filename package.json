@@ -18,6 +18,7 @@
     "chain": "hardhat node",
     "bootstrap": "hardhat run scripts/bootstrap.ts --network localhost",
     "keeper": "hardhat run scripts/renewalKeeper.ts --network localhost",
+    "ui:install": "npm --prefix frontend install",
     "test": "hardhat test",
     "ui": "npm --prefix frontend run dev"
   }
