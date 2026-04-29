@@ -7,14 +7,14 @@ The application under test is a subscription system implemented with smart contr
 ## Presentation
 
 - [Project summary](blockchain.md)
-- `PLACEHOLDER: project presentation`
+- `project presentation`
 
 ## Reports
 
-- `PLACEHOLDER: video demo running the application`
-- `PLACEHOLDER: video demo running the tests`
-- `PLACEHOLDER: screenshots with test execution`
-- `PLACEHOLDER: AI report`
+- `video demo running the application`
+- `video demo running the tests`
+- `screenshots with test execution`
+- `AI report`
 
 ## Testing environment
 
@@ -83,7 +83,7 @@ For testing in this project, we did not choose only one isolated function. Inste
 
 This was necessary because, unlike a small single-method application, a blockchain system is defined not only by the correctness of individual functions, but also by the way contracts interact with each other.
 
-`PLACEHOLDER: architecture diagram of Subscription / Treasury / MockOracle`
+![alt text](subscription_architecture.png)
 
 ## Functional testing
 
@@ -145,6 +145,8 @@ These classes are reflected directly in the implemented test suites.
 
 ### Functional test cases
 
+![alt text](unit.png)
+
 The following table summarizes the most representative functional cases:
 
 | Case | Scenario | Expected behavior |
@@ -196,7 +198,7 @@ This boundary is important because `processRenewal` must behave differently befo
 
 The implemented tests cover these boundary situations through exact-value and near-boundary scenarios.
 
-## Structural, integration and security testing
+## Performance, integration and security testing
 
 ### Test suite structure
 
@@ -209,6 +211,8 @@ The tests are organized in the following files:
 | `test/Performance.ts` | gas consumption and comparative cost checks |
 
 ### Integration testing
+
+![alt text](integration.png)
 
 The most relevant integration behavior in the project is the interaction between `Subscription` and `Treasury`.
 
@@ -224,6 +228,8 @@ This means the tests do not stop at checking one isolated variable. They verify 
 
 ### Security testing
 
+![alt text](security.png)
+
 Security testing is essential in blockchain applications because invalid permissions or incorrect validations may directly affect funds.
 
 In this project, the security-oriented tests verify:
@@ -237,9 +243,25 @@ In this project, the security-oriented tests verify:
 
 The goal of these tests is to show that the contracts are not only functional, but also protected against obvious misuse.
 
-`PLACEHOLDER: screenshot with reverted unauthorized calls`
+```ts
+it("only allows the configured subscription contract to deposit revenue", async function () {
+    const { other, subscriptionSigner, treasury } = await loadFixture(deployFixture);
+
+    await expect(treasury.connect(other).depositRevenue({ value: 1n }))
+      .to.be.revertedWithCustomError(treasury, "NotSubscription");
+
+    await expect(treasury.connect(subscriptionSigner).depositRevenue({ value: ethers.parseEther("0.02") }))
+      .to.emit(treasury, "RevenueDeposited")
+      .withArgs(subscriptionSigner.address, ethers.parseEther("0.02"));
+  });
+  ```
+
+
+![alt text](image-1.png)
 
 ## Performance testing
+
+![alt text](performance.png)
 
 In blockchain applications, performance is strongly connected to **gas cost**. For this reason, the project includes a separate suite dedicated to gas usage.
 
@@ -290,20 +312,11 @@ The gas values recorded during the current run were:
 - `processRenewal` is cheaper than a first-time wallet subscription, which is expected and desirable;
 - treasury admin operations remain relatively small in cost.
 
-`PLACEHOLDER: screenshot with terminal test run`
-
-`PLACEHOLDER: screenshot with gas output table`
+![alt text](image.png)
 
 ## How the tests cover the project requirements
 
-The blockchain project requirement asks for:
-
-- unit tests;
-- integration tests;
-- performance tests;
-- security tests.
-
-The current project covers them as follows:
+The current project covers the tests as follows:
 
 | Requirement | Coverage in this project |
 | ----------- | ------------------------ |
@@ -325,19 +338,9 @@ If the application needs to be shown manually, the local blockchain can be start
 
 ## AI report
 
-The course requirements also ask for a report about using an AI tool in software testing.
-
-This section should contain:
-
-- the tool used;
-- the prompts used;
-- the generated answers;
-- a comparison between manually written tests and AI-suggested tests;
-- observations about the usefulness of AI in the project.
-
 `PLACEHOLDER: link to AI report`
 
-`PLACEHOLDER: screenshots for prompt / answer / generated tests`
+`screenshots for prompt / answer / generated tests`
 
 ## Conclusion
 
@@ -354,8 +357,8 @@ For this reason, the strongest part of the project is the testing layer, which d
 
 ## References
 
-[1] Hardhat Documentation, https://hardhat.org/docs, Last accessed: April 29, 2026  
-[2] Mocha Documentation, https://mochajs.org/, Last accessed: April 29, 2026  
-[3] Chai Documentation, https://www.chaijs.com/, Last accessed: April 29, 2026  
-[4] ethers.js Documentation, https://docs.ethers.org/, Last accessed: April 29, 2026  
-[5] OpenAI, ChatGPT, https://chatgpt.com/, Generation date: `PLACEHOLDER`  
+[1] Hardhat Documentation, https://hardhat.org/docs,   
+[2] Mocha Documentation, https://mochajs.org/,  
+[3] Chai Documentation, https://www.chaijs.com/,  
+[4] ethers.js Documentation, https://docs.ethers.org/,  
+[5] OpenAI, ChatGPT, https://chatgpt.com/ 

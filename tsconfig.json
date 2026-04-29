@@ -10,5 +10,5 @@
     "moduleResolution": "node16",
     "outDir": "dist"
   },
-  "exclude": ["frontend", "typechain-types", "node_modules", "dist"]
+  "exclude": ["frontend", "node_modules", "dist"]
 }
