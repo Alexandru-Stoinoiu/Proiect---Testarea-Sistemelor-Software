@@ -277,3 +277,59 @@
   - am validat integrarea dintre contracte
   - am validat restrictiile de securitate de baza
   - am masurat costul executiei prin gas
+
+24. Intrebari probabile despre coverage
+- Cum ati generat coverage-ul?
+  - Cu comanda:
+    npx hardhat coverage
+- Ce inseamna valorile?
+  - Statements = cate instructiuni au fost executate
+  - Branches = cate ramuri conditionale au fost acoperite
+  - Functions = cate functii au fost atinse de teste
+  - Lines = cate linii executabile au fost parcurse
+- De ce nu este 100%?
+  - Pentru ca Subscriptions.sol are cele mai multe ramuri, combinatii de stare, helper paths si cazuri optionale.
+  - O suita compacta acopera bine fluxurile importante, dar nu forteaza absolut toate combinatiile posibile.
+- Ce contract are coverage-ul cel mai bun?
+  - MockOracle si Treasury, pentru ca au logica mai mica si mai directa.
+- Ce contract este cel mai greu de acoperit?
+  - Subscription, pentru ca are logica de plata, auto-renew, timp, owner-only si mai multe fluxuri.
+
+25. Intrebari probabile despre AI report
+- De ce ati facut 2 experimente?
+  - Ca sa comparam outputul AI cu context minim versus outputul AI cu context real din repository.
+- Ce a fost diferit intre ele?
+  - Experimentul 1 a folosit ChatGPT pentru idei si Codex pentru implementare cu context minim.
+  - Experimentul 2 a folosit Codex direct cu context real din proiect.
+- Care a iesit mai bine?
+  - Experimentul 2, pentru ca a produs mai multe teste utile si mai bine aliniate la structura reala a proiectului.
+- AI-ul a fost mai bun decat voi?
+  - Nu. AI-ul a fost util ca extensie si pentru idei, dar suita principala scrisa de echipa ramane referinta principala.
+- Ce concluzie trageti?
+  - AI-ul ajuta mai mult cand primeste context concret, dar nu inlocuieste proiectarea deliberata a testelor.
+
+
+
+
+
+Pentru de ce nu e coverage 100%?:
+
+„Nu am urmărit artificial 100%, ci o acoperire relevantă pentru fluxurile importante ale sistemului. 
+Subscription are cele mai multe ramuri, combinații de stare și cazuri dependente de timp, 
+iar într-o suită compactă am prioritizat comportamentele esențiale, nu toate combinațiile posibile.”
+
+O variantă și mai scurtă:
+„Coverage-ul nu e 100% pentru că am testat prioritar fluxurile critice și realiste. 
+În special în Subscription, există multe ramuri și combinații de stare care cresc dificultatea acoperirii totale.”
+
+
+Pentru de ce AI-ul nu e mai bun decât voi?:
+
+„Pentru că AI-ul ne-a ajutat mai ales ca instrument de suport, 
+dar nu înțelege automat prioritățile proiectului și cerințele T8 la fel de bine ca o echipă care a construit și a testat sistemul. 
+Cu context real a produs rezultate mai bune, dar suita noastră rămâne mai puternică fiindcă a fost gândită deliberat în jurul funcționalității,
+ integrării, securității și performanței.”
+
+O variantă și mai scurtă:
+„AI-ul e util pentru idei și extensii, dar nu înlocuiește proiectarea conștientă a testelor. 
+Noi am construit suita în jurul cerințelor reale ale proiectului, de aceea rămâne mai solidă decât outputul generat automat.”
