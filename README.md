@@ -6,15 +6,14 @@ The application under test is a subscription system implemented with smart contr
 
 ## Presentation
 
-- [Project summary](blockchain.md)
+- [Project setup](blockchain.md)
 - `project presentation`
 
 ## Reports
 
-- `video demo running the application`
-- `video demo running the tests`
-- `screenshots with test execution`
-- `AI report`
+- Video demo running the application: https://youtu.be/4w1VD41UNW0
+- Video demo running the tests: https://youtu.be/RhH0iM7G8kw
+- [AI-Report](AI-Report.md)
 
 ## Testing environment
 
@@ -83,7 +82,7 @@ For testing in this project, we did not choose only one isolated function. Inste
 
 This was necessary because, unlike a small single-method application, a blockchain system is defined not only by the correctness of individual functions, but also by the way contracts interact with each other.
 
-![alt text](subscription_architecture.png)
+![alt text](images/subscription_architecture.png)
 
 ## Functional testing
 
@@ -145,7 +144,7 @@ These classes are reflected directly in the implemented test suites.
 
 ### Functional test cases
 
-![alt text](unit.png)
+![alt text](images/unit.png)
 
 The following table summarizes the most representative functional cases:
 
@@ -212,7 +211,7 @@ The tests are organized in the following files:
 
 ### Integration testing
 
-![alt text](integration.png)
+![alt text](images/integration.png)
 
 The most relevant integration behavior in the project is the interaction between `Subscription` and `Treasury`.
 
@@ -228,7 +227,7 @@ This means the tests do not stop at checking one isolated variable. They verify 
 
 ### Security testing
 
-![alt text](security.png)
+![alt text](images/security.png)
 
 Security testing is essential in blockchain applications because invalid permissions or incorrect validations may directly affect funds.
 
@@ -257,11 +256,11 @@ it("only allows the configured subscription contract to deposit revenue", async 
   ```
 
 
-![alt text](image-1.png)
+![alt text](images/image-1.png)
 
 ## Performance testing
 
-![alt text](performance.png)
+![alt text](images/performance.png)
 
 In blockchain applications, performance is strongly connected to **gas cost**. For this reason, the project includes a separate suite dedicated to gas usage.
 
@@ -312,7 +311,44 @@ The gas values recorded during the current run were:
 - `processRenewal` is cheaper than a first-time wallet subscription, which is expected and desirable;
 - treasury admin operations remain relatively small in cost.
 
-![alt text](image.png)
+![alt text](images/image.png)
+
+## Coverage analysis
+
+The test suite was also evaluated from the perspective of code coverage. For Solidity contracts, this is useful because it shows not only that the tests pass, but also how much of the implemented contract logic is actually exercised during execution.
+
+The coverage report was generated with:
+
+```bash
+npx hardhat coverage
+```
+
+This command produced an HTML coverage report for the contracts and the following aggregated metrics for the `contracts/` directory:
+
+- **Statement coverage:** `83.87%` (`78 / 93`)
+- **Branch coverage:** `61.82%` (`68 / 110`)
+- **Function coverage:** `70.97%` (`22 / 31`)
+- **Line coverage:** `85.04%` (`108 / 127`)
+
+The overall coverage summary is shown below:
+
+![Coverage summary for contracts](images/Coverage_1.png)
+
+The detailed contract-level view is shown here:
+
+![Coverage details per contract](images/Coverage_2.png)
+
+### Coverage interpretation
+
+The results are consistent with the structure of the current suite.
+
+- `MockOracle.sol` has the highest coverage because its logic is small, direct and almost entirely exercised by the existing tests.
+- `Treasury.sol` also has strong coverage, since its administrative and authorization behaviors are already tested explicitly.
+- `Subscriptions.sol` has the lowest percentages because it contains the largest number of behaviors, branches and helper paths in the project, including time-dependent logic, multiple payment flows and owner-only or optional code paths.
+
+The branch and function coverage are lower than statement and line coverage mainly because some specialized paths are harder to trigger naturally in a compact suite. This is expected in a blockchain project where several functions depend on contract state, caller identity, balance combinations and time progression.
+
+Even so, the report shows that the most important logic is covered at a meaningful level, especially for the contracts that define the main subscription flow.
 
 ## How the tests cover the project requirements
 
@@ -338,9 +374,7 @@ If the application needs to be shown manually, the local blockchain can be start
 
 ## AI report
 
-`PLACEHOLDER: link to AI report`
-
-`screenshots for prompt / answer / generated tests`
+### [Complete AI Report](AI-Report.md)
 
 ## Conclusion
 

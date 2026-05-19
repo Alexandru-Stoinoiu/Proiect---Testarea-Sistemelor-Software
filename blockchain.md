@@ -103,7 +103,7 @@ npm run chain
 Terminal 2
 ```bash
 npm run bootstrap
-npm run ui:install
+(npm run ui:install)
 npm run ui
 ```
 Terminal 3 
