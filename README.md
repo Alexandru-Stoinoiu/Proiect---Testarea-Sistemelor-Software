@@ -7,7 +7,7 @@ The application under test is a subscription system implemented with smart contr
 ## Presentation
 
 - [Project setup](blockchain.md)
-- [Project Presentation](<Proiect TSS.pptx>)
+- [Project Presentation](<Proiect TSS.pdf>)
 
 ## Reports
 
